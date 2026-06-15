@@ -56,8 +56,9 @@ public class ItemController {
         if (!itemRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        
 
+
+        
         itemRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
