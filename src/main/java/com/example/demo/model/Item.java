@@ -1,15 +1,24 @@
 package com.example.demo.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "items")
+@Schema(description = "Item entity")
 public class Item {
 
     @Id
+    @Schema(description = "Unique identifier", example = "665f1a2b3c4d5e6f7a8b9c0d")
     private String id;
+
+    @Schema(description = "Item name", example = "Laptop")
     private String name;
+
+    @Schema(description = "Item description", example = "High-performance laptop")
     private String description;
+
+    @Schema(description = "Item price", example = "999.99")
     private double price;
 
     public Item() {}
