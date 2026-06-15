@@ -52,6 +52,7 @@ public class ItemController {
     @Operation(summary = "Delete an item")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
+        
         if (!itemRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
