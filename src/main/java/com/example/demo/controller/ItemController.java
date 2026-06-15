@@ -57,6 +57,7 @@ public class ItemController {
             return ResponseEntity.notFound().build();
         }
         
+
         itemRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
