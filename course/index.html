@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jenkins Full Course</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3347;
+      --accent: #d33833;
+      --accent2: #f0a500;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --code-bg: #12151f;
+      --green: #4ade80;
+      --blue: #60a5fa;
+      --purple: #a78bfa;
+      --orange: #fb923c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 260px;
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      z-index: 100;
+      padding-bottom: 2rem;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem 1.2rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .jenkins-logo {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; font-weight: 900; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header h2 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar-header span {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .nav-section {
+      padding: 0.8rem 0.8rem 0.2rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.45rem 1.2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--text);
+      background: var(--surface2);
+      border-left-color: var(--accent);
+    }
+
+    .nav-link .num {
+      color: var(--accent);
+      font-weight: 700;
+      margin-right: 0.3rem;
+      font-size: 0.72rem;
+    }
+
+    /* ── Main content ── */
+    .main {
+      margin-left: 260px;
+      min-height: 100vh;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1a0a0a 0%, #1a1d27 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 4rem 3rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(211,56,51,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(211,56,51,0.15);
+      border: 1px solid rgba(211,56,51,0.4);
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 600px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .stat { text-align: left; }
+    .stat-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent2);
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Content area ── */
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 3rem;
+    }
+
+    /* ── Module cards ── */
+    .module {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+      scroll-margin-top: 1.5rem;
+    }
+
+    .module-header {
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .module-header:hover { background: var(--surface2); }
+
+    .module-num {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.75rem;
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .module-title {
+      font-size: 1rem;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .module-toggle {
+      color: var(--muted);
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+
+    .module.open .module-toggle { transform: rotate(180deg); }
+
+    .module-body {
+      display: none;
+      padding: 1.5rem;
+    }
+
+    .module.open .module-body { display: block; }
+
+    /* ── Typography inside modules ── */
+    .module-body h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent2);
+      margin: 1.4rem 0 0.6rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .module-body h3:first-child { margin-top: 0; }
+
+    .module-body p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .module-body strong { color: var(--text); }
+
+    .module-body ul, .module-body ol {
+      padding-left: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .module-body li {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    /* ── Code blocks ── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem 1.2rem;
+      overflow-x: auto;
+      margin: 0.8rem 0 1rem;
+      position: relative;
+    }
+
+    pre code {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.82em;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+      color: var(--orange);
+    }
+
+    pre code { background: none; border: none; padding: 0; color: inherit; }
+
+    /* Syntax highlighting classes */
+    .kw  { color: #c792ea; }   /* keyword */
+    .str { color: #c3e88d; }   /* string */
+    .cmt { color: #546e7a; font-style: italic; } /* comment */
+    .num { color: #f78c6c; }   /* number */
+    .fn  { color: #82aaff; }   /* function */
+    .var { color: #eeffff; }   /* variable */
+    .op  { color: #89ddff; }   /* operator/punctuation */
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.8rem 0 1rem;
+      font-size: 0.83rem;
+    }
+
+    th {
+      background: var(--surface2);
+      color: var(--text);
+      font-weight: 700;
+      padding: 0.6rem 1rem;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 0.55rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    td:first-child { color: var(--blue); font-family: monospace; font-size: 0.85em; }
+
+    tr:hover td { background: var(--surface2); }
+
+    /* ── Info boxes ── */
+    .tip, .warn, .info {
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      margin: 0.8rem 0;
+      font-size: 0.85rem;
+      border-left: 4px solid;
+    }
+
+    .tip  { background: rgba(74,222,128,0.07); border-color: var(--green); color: var(--green); }
+    .warn { background: rgba(251,146,60,0.07); border-color: var(--orange); color: var(--orange); }
+    .info { background: rgba(96,165,250,0.07); border-color: var(--blue); color: var(--blue); }
+
+    .tip strong, .warn strong, .info strong { display: block; margin-bottom: 0.2rem; }
+
+    /* ── Progress bar ── */
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 260px;
+      height: 3px;
+      background: var(--accent);
+      z-index: 200;
+      transition: width 0.2s;
+    }
+
+    /* ── Week plan ── */
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .week-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .week-card h4 {
+      color: var(--accent2);
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .week-card ul { padding-left: 1.2rem; }
+    .week-card li { font-size: 0.8rem; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .progress-bar { left: 0; }
+      .content { padding: 1.5rem; }
+      .hero { padding: 2rem 1.5rem; }
+      .hero h1 { font-size: 1.6rem; }
+      .week-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="jenkins-logo">J</div>
+    <div>
+      <h2>Jenkins Course</h2>
+      <span>20 Modules · Full CI/CD</span>
+    </div>
+  </div>
+
+  <div class="nav-section">Core</div>
+  <a class="nav-link" href="#m1"><span class="num">01</span>What Is Jenkins</a>
+  <a class="nav-link" href="#m2"><span class="num">02</span>Declarative vs Scripted</a>
+  <a class="nav-link" href="#m3"><span class="num">03</span>Your Jenkinsfile Explained</a>
+  <a class="nav-link" href="#m4"><span class="num">04</span>Environment Variables</a>
+
+  <div class="nav-section">Agents & Secrets</div>
+  <a class="nav-link" href="#m5"><span class="num">05</span>Agents &amp; Nodes</a>
+  <a class="nav-link" href="#m6"><span class="num">06</span>Credentials Management</a>
+
+  <div class="nav-section">Pipeline Control</div>
+  <a class="nav-link" href="#m7"><span class="num">07</span>Post Actions &amp; Notifications</a>
+  <a class="nav-link" href="#m8"><span class="num">08</span>Parallel Stages</a>
+  <a class="nav-link" href="#m9"><span class="num">09</span>Parameters</a>
+  <a class="nav-link" href="#m10"><span class="num">10</span>When Conditions</a>
+
+  <div class="nav-section">Advanced</div>
+  <a class="nav-link" href="#m11"><span class="num">11</span>Shared Libraries</a>
+  <a class="nav-link" href="#m12"><span class="num">12</span>Triggers</a>
+  <a class="nav-link" href="#m13"><span class="num">13</span>Multibranch Pipeline</a>
+  <a class="nav-link" href="#m14"><span class="num">14</span>Artifacts &amp; Archiving</a>
+  <a class="nav-link" href="#m15"><span class="num">15</span>Error Handling &amp; Retry</a>
+  <a class="nav-link" href="#m16"><span class="num">16</span>Script Block</a>
+  <a class="nav-link" href="#m17"><span class="num">17</span>Docker in Jenkins</a>
+
+  <div class="nav-section">Reference</div>
+  <a class="nav-link" href="#m18"><span class="num">18</span>Enhanced Full Pipeline</a>
+  <a class="nav-link" href="#m19"><span class="num">19</span>Key Plugins</a>
+  <a class="nav-link" href="#m20"><span class="num">20</span>Troubleshooting</a>
+</nav>
+
+<!-- Main -->
+<div class="main">
+  <div class="hero">
+    <div class="hero-badge">Full Course</div>
+    <h1>Jenkins CI/CD<br /><span>Complete Guide</span></h1>
+    <p>Hands-on Jenkins from scratch to production — built around your real Spring Boot + MongoDB pipeline.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">20</div><div class="stat-label">Modules</div></div>
+      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Pipeline Stages</div></div>
+      <div class="stat"><div class="stat-num">Real</div><div class="stat-label">Project Code</div></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- M1 -->
+    <div class="module open" id="m1">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">01</div>
+        <div class="module-title">What Is Jenkins &amp; How It Works</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <p>Jenkins is an open-source <strong>CI/CD automation server</strong>. It watches your code repository and automatically runs tasks (build, test, deploy) whenever code changes.</p>
+        <p><strong>CI (Continuous Integration)</strong> = automatically build &amp; test every commit.<br/>
+        <strong>CD (Continuous Delivery/Deployment)</strong> = automatically ship the result.</p>
+
+        <h3>Core Concepts</h3>
+        <table>
+          <tr><th>Term</th><th>Meaning</th></tr>
+          <tr><td>Job / Pipeline</td><td>A configured automation task</td></tr>
+          <tr><td>Build</td><td>One execution of a job</td></tr>
+          <tr><td>Stage</td><td>A named phase inside a pipeline</td></tr>
+          <tr><td>Step</td><td>A single command inside a stage</td></tr>
+          <tr><td>Agent</td><td>The machine that runs your build</td></tr>
+          <tr><td>Node</td><td>A Jenkins server/worker</td></tr>
+          <tr><td>Workspace</td><td>The directory where your code is checked out</td></tr>
+          <tr><td>Artifact</td><td>A file produced by a build (e.g., app.jar)</td></tr>
+        </table>
+
+        <h3>Jenkins Architecture</h3>
+        <pre><code>┌─────────────────────────────────────┐
+│           Jenkins Controller         │
+│  (schedules jobs, stores config)     │
+└────────────────┬────────────────────┘
+                 │ distributes work
+       ┌─────────┴──────────┐
+       ▼                    ▼
+  Agent Node 1         Agent Node 2
+  (Linux/Maven)        (Docker/Node)</code></pre>
+        <div class="info"><strong>Your Setup:</strong> Your Jenkinsfile uses <code>agent any</code> — Jenkins picks whatever agent is free.</div>
+      </div>
+    </div>
+
+    <!-- M2 -->
+    <div class="module" id="m2">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">02</div>
+        <div class="module-title">Declarative vs Scripted Pipeline</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <h3>Declarative (recommended — what you have)</h3>
+        <pre><code><span class="kw">pipeline</span> {
+    <span class="kw">agent</span> any
+    <span class="kw">stages</span> {
+        <span class="kw">stage</span>(<span class="str">'Build'</span>) {
+            <span class="kw">steps</span> {
+                sh <span class="str">'mvn clean package'</span>
+            }
+        }
+    }
+}</code></pre>
+
+        <h3>Scripted (older, more flexible)</h3>
+        <pre><code><span class="fn">node</span> {
+    <span class="fn">stage</span>(<span class="str">'Build'</span>) {
+        sh <span class="str">'mvn clean package'</span>
+    }
+}</code></pre>
+        <div class="tip"><strong>Rule of thumb:</strong> Use Declarative. Fall back to Scripted only when you need advanced logic inside a <code>script {}</code> block.</div>
+      </div>
+    </div>
+
+    <!-- M3 -->
+    <div class="module" id="m3">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">03</div>
+        <div class="module-title">Anatomy of YOUR Jenkinsfile (Line by Line)</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <h3>Top-Level Structure</h3>
+        <pre><code><span class="kw">pipeline</span> {          <span class="cmt">// Declares a Declarative Pipeline</span>
+    <span class="kw">agent</span> any         <span class="cmt">// Run on any available agent</span>
+
+    <span class="kw">environment</span> {     <span class="cmt">// Global env vars available in ALL stages</span>
+        NEXUS_URL = <span class="str">'http://nexus:8081'</span>
+    }
+
+    <span class="kw">stages</span> { ... }    <span class="cmt">// All your stages go here</span>
+    <span class="kw">post</span> { ... }      <span class="cmt">// Runs AFTER all stages finish</span>
+}</code></pre>
+
+        <h3>Stage: Checkout</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Checkout'</span>) {
+    <span class="kw">steps</span> {
+        checkout scm   <span class="cmt">// 'scm' = the Source Control Manager</span>
+    }                  <span class="cmt">// configured in Jenkins job settings</span>
+}</code></pre>
+        <p><code>checkout scm</code> clones your Git repo into the workspace. <code>scm</code> is a built-in variable Jenkins fills automatically.</p>
+
+        <h3>Stage: Build</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Build'</span>) {
+    <span class="kw">steps</span> {
+        sh <span class="str">'mvn clean package -DskipTests'</span>
+        <span class="cmt">//                  ^ skip tests here (run them separately)</span>
+    }
+}</code></pre>
+        <p><code>sh</code> runs a shell command. <code>-DskipTests</code> skips tests during packaging so the build is fast.</p>
+
+        <h3>Stage: Test</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Test'</span>) {
+    <span class="kw">steps</span> {
+        sh <span class="str">'mvn test'</span>
+    }
+    <span class="kw">post</span> {
+        always {   <span class="cmt">// Runs whether test passed or failed</span>
+            junit <span class="str">'**/target/surefire-reports/*.xml'</span>
+            <span class="cmt">// Parses test reports → Jenkins shows pass/fail graph</span>
+        }
+    }
+}</code></pre>
+
+        <h3>Stage: SonarQube Analysis</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'SonarQube Analysis'</span>) {
+    <span class="kw">steps</span> {
+        withSonarQubeEnv(<span class="str">'SonarQube'</span>) {
+        <span class="cmt">// ^ Name of your SonarQube server in Jenkins config</span>
+            sh <span class="str">'mvn sonar:sonar'</span>
+        }
+    }
+}</code></pre>
+        <p><code>withSonarQubeEnv()</code> injects the SonarQube server URL and token so Maven can connect.</p>
+
+        <h3>Stage: Quality Gate</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Quality Gate'</span>) {
+    <span class="kw">steps</span> {
+        timeout(time: <span class="num">5</span>, unit: <span class="str">'MINUTES'</span>) {
+            waitForQualityGate abortPipeline: <span class="kw">true</span>
+            <span class="cmt">// abortPipeline: true = stop if gate fails</span>
+        }
+    }
+}</code></pre>
+
+        <h3>Stage: Publish to Nexus</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Publish to Nexus'</span>) {
+    <span class="kw">steps</span> {
+        withCredentials([usernamePassword(
+            credentialsId: <span class="str">'nexus-credentials'</span>,
+            usernameVariable: <span class="str">'NEXUS_USER'</span>,
+            passwordVariable: <span class="str">'NEXUS_PASS'</span>
+        )]) {
+            <span class="kw">script</span> {
+                writeFile file: <span class="str">'maven-settings.xml'</span>, text: <span class="str">"""..."""</span>
+            }
+            sh <span class="str">"mvn deploy -DskipTests -s maven-settings.xml"</span>
+        }
+    }
+    <span class="kw">post</span> {
+        always {
+            sh <span class="str">'rm -f maven-settings.xml'</span>  <span class="cmt">// Never leave credentials on disk</span>
+        }
+    }
+}</code></pre>
+
+        <h3>Stage: Deploy</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Deploy'</span>) {
+    <span class="kw">steps</span> {
+        sh <span class="str">'''
+            pkill -f app.jar || true   # Kill old process; || true = don't fail
+            nohup java -jar target/app.jar > /home/ubuntu/app.log 2>&1 &
+            # nohup = run even after shell exits, & = background
+        '''</span>
+    }
+}</code></pre>
+
+        <h3>Global Post Block</h3>
+        <pre><code><span class="kw">post</span> {
+    success { echo <span class="str">'Build and deploy successful!'</span> }
+    failure { echo <span class="str">'Build failed!'</span> }
+    <span class="cmt">// Other: always, unstable, aborted, changed</span>
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M4 -->
+    <div class="module" id="m4">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">04</div>
+        <div class="module-title">Environment Variables</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <h3>Built-in Jenkins Variables</h3>
+        <pre><code>env.BUILD_NUMBER    <span class="cmt">// "42"</span>
+env.BUILD_URL       <span class="cmt">// "http://jenkins/job/myapp/42/"</span>
+env.JOB_NAME        <span class="cmt">// "myapp"</span>
+env.BRANCH_NAME     <span class="cmt">// "main"</span>
+env.WORKSPACE       <span class="cmt">// "/var/jenkins_home/workspace/myapp"</span>
+env.GIT_COMMIT      <span class="cmt">// full git SHA</span>
+env.GIT_BRANCH      <span class="cmt">// "origin/main"</span></code></pre>
+
+        <h3>Defining Your Own</h3>
+        <pre><code><span class="kw">environment</span> {
+    NEXUS_URL = <span class="str">'http://nexus:8081'</span>          <span class="cmt">// static</span>
+    VERSION   = sh(returnStdout: <span class="kw">true</span>,        <span class="cmt">// dynamic</span>
+                   script: <span class="str">'git describe --tags'</span>).trim()
+    APP_NAME  = <span class="str">"${JOB_NAME}-${BUILD_NUMBER}"</span>  <span class="cmt">// interpolation</span>
+}</code></pre>
+
+        <h3>Accessing Variables</h3>
+        <pre><code>sh <span class="str">"echo ${env.NEXUS_URL}"</span>   <span class="cmt">// Groovy interpolation (double quotes)</span>
+sh <span class="str">'echo $NEXUS_URL'</span>         <span class="cmt">// Shell variable (single quotes)</span></code></pre>
+        <div class="warn"><strong>Important:</strong> Use single quotes in <code>sh</code> when you don't want Groovy to interpolate. Use double quotes when you need Jenkins env vars inside the command.</div>
+      </div>
+    </div>
+
+    <!-- M5 -->
+    <div class="module" id="m5">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">05</div>
+        <div class="module-title">Agents &amp; Nodes</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <h3>agent any</h3>
+        <pre><code><span class="kw">agent</span> any  <span class="cmt">// Pick any available agent</span></code></pre>
+
+        <h3>agent none (stage-level agents)</h3>
+        <pre><code><span class="kw">pipeline</span> {
+    <span class="kw">agent</span> none   <span class="cmt">// No global agent</span>
+    <span class="kw">stages</span> {
+        <span class="kw">stage</span>(<span class="str">'Build'</span>) {
+            <span class="kw">agent</span> { label <span class="str">'maven'</span> }   <span class="cmt">// Run on agent tagged 'maven'</span>
+            <span class="kw">steps</span> { sh <span class="str">'mvn package'</span> }
+        }
+        <span class="kw">stage</span>(<span class="str">'Deploy'</span>) {
+            <span class="kw">agent</span> { label <span class="str">'prod-server'</span> }
+            <span class="kw">steps</span> { sh <span class="str">'./deploy.sh'</span> }
+        }
+    }
+}</code></pre>
+
+        <h3>agent with Docker</h3>
+        <pre><code><span class="kw">agent</span> {
+    docker {
+        image <span class="str">'maven:3.9-eclipse-temurin-17'</span>
+        args <span class="str">'-v $HOME/.m2:/root/.m2'</span>  <span class="cmt">// Cache Maven deps</span>
+    }
+}</code></pre>
+        <div class="tip"><strong>Docker agents</strong> give you fully reproducible builds — the same image always runs the same commands, regardless of what's installed on the host.</div>
+
+        <h3>agent with multiple labels</h3>
+        <pre><code><span class="kw">agent</span> { label <span class="str">'linux &amp;&amp; docker'</span> }  <span class="cmt">// Must have BOTH labels</span></code></pre>
+      </div>
+    </div>
+
+    <!-- M6 -->
+    <div class="module" id="m6">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">06</div>
+        <div class="module-title">Credentials Management</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <div class="warn"><strong>Never hardcode secrets.</strong> Jenkins has a built-in encrypted credential store.</div>
+
+        <h3>Types of Credentials</h3>
+        <table>
+          <tr><th>Type</th><th>Usage</th></tr>
+          <tr><td>usernamePassword</td><td>Username + password pairs (your Nexus setup)</td></tr>
+          <tr><td>string</td><td>Single secret string / API token</td></tr>
+          <tr><td>sshUserPrivateKey</td><td>SSH private key</td></tr>
+          <tr><td>file</td><td>A secret file (e.g., kubeconfig)</td></tr>
+          <tr><td>certificate</td><td>PKI cert + key</td></tr>
+        </table>
+
+        <h3>Username + Password (like your Nexus stage)</h3>
+        <pre><code>withCredentials([usernamePassword(
+    credentialsId: <span class="str">'nexus-credentials'</span>,
+    usernameVariable: <span class="str">'USER'</span>,
+    passwordVariable: <span class="str">'PASS'</span>
+)]) {
+    sh <span class="str">'curl -u $USER:$PASS http://nexus/api'</span>
+}</code></pre>
+
+        <h3>Single String (API Token)</h3>
+        <pre><code>withCredentials([string(credentialsId: <span class="str">'sonar-token'</span>, variable: <span class="str">'TOKEN'</span>)]) {
+    sh <span class="str">'curl -H "Authorization: Bearer $TOKEN" ...'</span>
+}</code></pre>
+
+        <h3>SSH Key</h3>
+        <pre><code>withCredentials([sshUserPrivateKey(
+    credentialsId: <span class="str">'deploy-key'</span>,
+    keyFileVariable: <span class="str">'KEY_FILE'</span>
+)]) {
+    sh <span class="str">'ssh -i $KEY_FILE ubuntu@server ./deploy.sh'</span>
+}</code></pre>
+
+        <div class="info"><strong>Where to store:</strong> Jenkins UI → Manage Jenkins → Credentials → System → Global credentials</div>
+      </div>
+    </div>
+
+    <!-- M7 -->
+    <div class="module" id="m7">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">07</div>
+        <div class="module-title">Post Actions &amp; Notifications</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <h3>All Post Conditions</h3>
+        <pre><code><span class="kw">post</span> {
+    always    { }   <span class="cmt">// Always runs</span>
+    success   { }   <span class="cmt">// Only on success</span>
+    failure   { }   <span class="cmt">// Only on failure</span>
+    unstable  { }   <span class="cmt">// Tests passed but some failed (yellow)</span>
+    aborted   { }   <span class="cmt">// Job was manually cancelled</span>
+    changed   { }   <span class="cmt">// Status changed from previous build</span>
+    fixed     { }   <span class="cmt">// Was failing, now passing</span>
+    regression{ }   <span class="cmt">// Was passing, now failing</span>
+    cleanup   { }   <span class="cmt">// LAST to run, even after other post conditions</span>
+}</code></pre>
+
+        <h3>Email Notification</h3>
+        <pre><code><span class="kw">post</span> {
+    failure {
+        mail to: <span class="str">'team@example.com'</span>,
+             subject: <span class="str">"FAILED: ${JOB_NAME} #${BUILD_NUMBER}"</span>,
+             body: <span class="str">"Build failed. Check: ${BUILD_URL}"</span>
+    }
+}</code></pre>
+
+        <h3>Slack Notification</h3>
+        <pre><code><span class="kw">post</span> {
+    success {
+        slackSend channel: <span class="str">'#deployments'</span>,
+                  color: <span class="str">'good'</span>,
+                  message: <span class="str">"Deployed ${JOB_NAME} #${BUILD_NUMBER}"</span>
+    }
+    failure {
+        slackSend channel: <span class="str">'#deployments'</span>,
+                  color: <span class="str">'danger'</span>,
+                  message: <span class="str">"FAILED ${JOB_NAME} #${BUILD_NUMBER} - ${BUILD_URL}"</span>
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M8 -->
+    <div class="module" id="m8">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">08</div>
+        <div class="module-title">Parallel Stages</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <p>Run stages simultaneously to save time:</p>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Test &amp; Analyze'</span>) {
+    parallel {
+        <span class="kw">stage</span>(<span class="str">'Unit Tests'</span>) {
+            <span class="kw">steps</span> { sh <span class="str">'mvn test'</span> }
+        }
+        <span class="kw">stage</span>(<span class="str">'Integration Tests'</span>) {
+            <span class="kw">steps</span> { sh <span class="str">'mvn verify -Pintegration'</span> }
+        }
+        <span class="kw">stage</span>(<span class="str">'Security Scan'</span>) {
+            <span class="kw">steps</span> { sh <span class="str">'mvn dependency-check:check'</span> }
+        }
+    }
+}</code></pre>
+        <div class="tip"><strong>All three run at the same time.</strong> The parallel block finishes when all branches finish (or any one fails).</div>
+      </div>
+    </div>
+
+    <!-- M9 -->
+    <div class="module" id="m9">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">09</div>
+        <div class="module-title">Parameters (Manual Input)</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <pre><code><span class="kw">pipeline</span> {
+    <span class="kw">agent</span> any
+    <span class="kw">parameters</span> {
+        string(name: <span class="str">'VERSION'</span>, defaultValue: <span class="str">'1.0.0'</span>, description: <span class="str">'Release version'</span>)
+        choice(name: <span class="str">'ENVIRONMENT'</span>, choices: [<span class="str">'dev'</span>, <span class="str">'staging'</span>, <span class="str">'prod'</span>], description: <span class="str">'Target env'</span>)
+        booleanParam(name: <span class="str">'SKIP_TESTS'</span>, defaultValue: <span class="kw">false</span>, description: <span class="str">'Skip test stage'</span>)
+        password(name: <span class="str">'DEPLOY_KEY'</span>, defaultValue: <span class="str">''</span>, description: <span class="str">'Deployment secret'</span>)
+    }
+    <span class="kw">stages</span> {
+        <span class="kw">stage</span>(<span class="str">'Build'</span>) {
+            <span class="kw">steps</span> {
+                sh <span class="str">"mvn clean package -Dversion=${params.VERSION}"</span>
+            }
+        }
+        <span class="kw">stage</span>(<span class="str">'Test'</span>) {
+            <span class="kw">when</span> {
+                expression { <span class="kw">return</span> !params.SKIP_TESTS }
+            }
+            <span class="kw">steps</span> { sh <span class="str">'mvn test'</span> }
+        }
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M10 -->
+    <div class="module" id="m10">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">10</div>
+        <div class="module-title">When Conditions (Conditional Stages)</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <pre><code><span class="kw">stage</span>(<span class="str">'Deploy to Prod'</span>) {
+    <span class="kw">when</span> {
+        branch <span class="str">'main'</span>           <span class="cmt">// Only on main branch</span>
+    }
+    <span class="kw">steps</span> { sh <span class="str">'./deploy-prod.sh'</span> }
+}
+
+<span class="kw">stage</span>(<span class="str">'Deploy to Staging'</span>) {
+    <span class="kw">when</span> {
+        anyOf {
+            branch <span class="str">'develop'</span>
+            branch <span class="str">'release/*'</span>
+        }
+    }
+    <span class="kw">steps</span> { sh <span class="str">'./deploy-staging.sh'</span> }
+}
+
+<span class="kw">stage</span>(<span class="str">'Publish'</span>) {
+    <span class="kw">when</span> {
+        allOf {
+            branch <span class="str">'main'</span>
+            not { changeRequest() }   <span class="cmt">// Not a PR</span>
+        }
+    }
+    <span class="kw">steps</span> { sh <span class="str">'mvn deploy'</span> }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M11 -->
+    <div class="module" id="m11">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">11</div>
+        <div class="module-title">Shared Libraries</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <p>When multiple pipelines share common logic, extract it to a <strong>Shared Library</strong> in a separate Git repo.</p>
+
+        <h3>Library Structure</h3>
+        <pre><code>jenkins-shared-lib/
+├── vars/
+│   ├── buildMaven.groovy       <span class="cmt"># Global variable (callable as function)</span>
+│   └── deployApp.groovy
+└── src/
+    └── com/example/
+        └── PipelineUtils.groovy  <span class="cmt"># Reusable classes</span></code></pre>
+
+        <h3>vars/buildMaven.groovy</h3>
+        <pre><code><span class="kw">def</span> <span class="fn">call</span>(String version = <span class="str">''</span>) {
+    sh <span class="str">"mvn clean package ${version ? '-Dversion=' + version : ''} -DskipTests"</span>
+    junit <span class="str">'**/target/surefire-reports/*.xml'</span>
+}</code></pre>
+
+        <h3>Using the Shared Library</h3>
+        <pre><code>@Library(<span class="str">'jenkins-shared-lib'</span>) _   <span class="cmt">// Load it</span>
+
+<span class="kw">pipeline</span> {
+    <span class="kw">agent</span> any
+    <span class="kw">stages</span> {
+        <span class="kw">stage</span>(<span class="str">'Build'</span>) {
+            <span class="kw">steps</span> {
+                buildMaven(<span class="str">'1.2.3'</span>)   <span class="cmt">// Call the shared function</span>
+            }
+        }
+    }
+}</code></pre>
+        <div class="info"><strong>Register:</strong> Manage Jenkins → Configure System → Global Pipeline Libraries</div>
+      </div>
+    </div>
+
+    <!-- M12 -->
+    <div class="module" id="m12">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">12</div>
+        <div class="module-title">Triggers</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <pre><code><span class="kw">pipeline</span> {
+    <span class="kw">agent</span> any
+    <span class="kw">triggers</span> {
+        <span class="cmt">// Poll SCM every 5 minutes</span>
+        pollSCM(<span class="str">'H/5 * * * *'</span>)
+
+        <span class="cmt">// Run on a schedule (nightly at 2am)</span>
+        cron(<span class="str">'H 2 * * *'</span>)
+
+        <span class="cmt">// Trigger when another job finishes</span>
+        upstream(upstreamProjects: <span class="str">'other-job'</span>, threshold: hudson.model.Result.SUCCESS)
+    }
+}</code></pre>
+
+        <h3>GitHub Webhook (Better than Polling)</h3>
+        <ol>
+          <li>Jenkins URL: <code>http://your-jenkins/github-webhook/</code></li>
+          <li>GitHub → Repo → Settings → Webhooks → Add webhook</li>
+          <li>Content type: <code>application/json</code></li>
+          <li>Event: "Just the push event"</li>
+        </ol>
+        <div class="tip"><strong>Webhooks are better</strong> — your Git server calls Jenkins when you push. No polling delay, no wasted network checks.</div>
+      </div>
+    </div>
+
+    <!-- M13 -->
+    <div class="module" id="m13">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">13</div>
+        <div class="module-title">Multibranch Pipeline</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <p>The most powerful Jenkins job type. Jenkins automatically discovers branches and PRs in your repo and creates a pipeline for each.</p>
+
+        <h3>Setup</h3>
+        <ol>
+          <li>Jenkins → New Item → <strong>Multibranch Pipeline</strong></li>
+          <li>Branch Sources → Add → GitHub/GitLab → enter repo URL</li>
+          <li>Jenkins scans all branches, finds <code>Jenkinsfile</code> in each, creates jobs automatically</li>
+        </ol>
+
+        <h3>Branch-Specific Logic</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Deploy'</span>) {
+    <span class="kw">when</span> { branch <span class="str">'main'</span> }
+    <span class="kw">steps</span> { sh <span class="str">'./deploy-prod.sh'</span> }
+}
+
+<span class="kw">stage</span>(<span class="str">'Deploy to Dev'</span>) {
+    <span class="kw">when</span> { branch <span class="str">'develop'</span> }
+    <span class="kw">steps</span> { sh <span class="str">'./deploy-dev.sh'</span> }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M14 -->
+    <div class="module" id="m14">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">14</div>
+        <div class="module-title">Artifacts &amp; Archiving</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <h3>Archive Build Outputs</h3>
+        <pre><code><span class="kw">post</span> {
+    success {
+        archiveArtifacts artifacts: <span class="str">'target/app.jar'</span>,
+                         fingerprint: <span class="kw">true</span>,
+                         onlyIfSuccessful: <span class="kw">true</span>
+    }
+}</code></pre>
+
+        <h3>Stash/Unstash (Pass Files Between Agents)</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Build'</span>) {
+    <span class="kw">steps</span> {
+        sh <span class="str">'mvn package -DskipTests'</span>
+        stash includes: <span class="str">'target/app.jar'</span>, name: <span class="str">'app-jar'</span>
+    }
+}
+
+<span class="kw">stage</span>(<span class="str">'Deploy'</span>) {
+    <span class="kw">agent</span> { label <span class="str">'deploy-server'</span> }  <span class="cmt">// Different agent!</span>
+    <span class="kw">steps</span> {
+        unstash <span class="str">'app-jar'</span>            <span class="cmt">// Get the jar from build agent</span>
+        sh <span class="str">'java -jar target/app.jar'</span>
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M15 -->
+    <div class="module" id="m15">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">15</div>
+        <div class="module-title">Error Handling &amp; Retry</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <pre><code><span class="kw">stage</span>(<span class="str">'Flaky Test'</span>) {
+    <span class="kw">steps</span> {
+        retry(<span class="num">3</span>) {              <span class="cmt">// Try up to 3 times before failing</span>
+            sh <span class="str">'mvn verify'</span>
+        }
+    }
+}
+
+<span class="kw">stage</span>(<span class="str">'Build'</span>) {
+    <span class="kw">steps</span> {
+        timeout(time: <span class="num">10</span>, unit: <span class="str">'MINUTES'</span>) {   <span class="cmt">// Fail if takes >10 min</span>
+            sh <span class="str">'mvn clean package'</span>
+        }
+    }
+}
+
+<span class="kw">stage</span>(<span class="str">'Optional Step'</span>) {
+    <span class="kw">steps</span> {
+        catchError(buildResult: <span class="str">'SUCCESS'</span>, stageResult: <span class="str">'UNSTABLE'</span>) {
+            sh <span class="str">'./optional-scan.sh'</span>   <span class="cmt">// Failure marks stage yellow, not red</span>
+        }
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M16 -->
+    <div class="module" id="m16">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">16</div>
+        <div class="module-title">Script Block (Advanced Groovy)</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <p>When you need logic beyond what Declarative allows, use a <code>script {}</code> block:</p>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Dynamic Deploy'</span>) {
+    <span class="kw">steps</span> {
+        <span class="kw">script</span> {
+            <span class="cmt">// Full Groovy available here</span>
+            <span class="kw">def</span> servers = [<span class="str">'server1'</span>, <span class="str">'server2'</span>, <span class="str">'server3'</span>]
+            <span class="kw">for</span> (server <span class="kw">in</span> servers) {
+                sh <span class="str">"ssh ubuntu@${server} './deploy.sh'"</span>
+            }
+
+            <span class="cmt">// Capture output from shell</span>
+            <span class="kw">def</span> gitTag = sh(returnStdout: <span class="kw">true</span>, script: <span class="str">'git describe --tags'</span>).trim()
+            echo <span class="str">"Deploying version: ${gitTag}"</span>
+
+            <span class="cmt">// Conditional logic</span>
+            <span class="kw">if</span> (env.BRANCH_NAME == <span class="str">'main'</span>) {
+                sh <span class="str">'./notify-team.sh'</span>
+            }
+        }
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M17 -->
+    <div class="module" id="m17">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">17</div>
+        <div class="module-title">Docker in Jenkins</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <h3>Build &amp; Push Docker Image</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Docker Build &amp; Push'</span>) {
+    <span class="kw">steps</span> {
+        withCredentials([usernamePassword(
+            credentialsId: <span class="str">'dockerhub-creds'</span>,
+            usernameVariable: <span class="str">'DOCKER_USER'</span>,
+            passwordVariable: <span class="str">'DOCKER_PASS'</span>
+        )]) {
+            sh <span class="str">"""
+                docker login -u $DOCKER_USER -p $DOCKER_PASS
+                docker build -t myapp:${BUILD_NUMBER} .
+                docker tag myapp:${BUILD_NUMBER} myuser/myapp:latest
+                docker push myuser/myapp:latest
+            """</span>
+        }
+    }
+}</code></pre>
+
+        <h3>Docker Pipeline Plugin</h3>
+        <pre><code><span class="kw">stage</span>(<span class="str">'Build Image'</span>) {
+    <span class="kw">steps</span> {
+        <span class="kw">script</span> {
+            <span class="kw">def</span> image = docker.build(<span class="str">"myapp:${BUILD_NUMBER}"</span>)
+            docker.withRegistry(<span class="str">'https://registry.example.com'</span>, <span class="str">'registry-creds'</span>) {
+                image.push()
+                image.push(<span class="str">'latest'</span>)
+            }
+        }
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M18 -->
+    <div class="module" id="m18">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">18</div>
+        <div class="module-title">Complete Enhanced Pipeline (Your Project Upgraded)</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <p>Your current <code>Jenkinsfile</code> upgraded with everything from this course:</p>
+        <pre><code><span class="kw">pipeline</span> {
+    <span class="kw">agent</span> any
+
+    <span class="kw">environment</span> {
+        NEXUS_URL    = <span class="str">'http://nexus:8081'</span>
+        APP_VERSION  = <span class="str">"${BUILD_NUMBER}"</span>
+    }
+
+    <span class="kw">triggers</span> {
+        pollSCM(<span class="str">'H/5 * * * *'</span>)
+    }
+
+    <span class="kw">parameters</span> {
+        choice(name: <span class="str">'DEPLOY_ENV'</span>, choices: [<span class="str">'dev'</span>, <span class="str">'staging'</span>, <span class="str">'prod'</span>],
+               description: <span class="str">'Deployment target'</span>)
+        booleanParam(name: <span class="str">'SKIP_SONAR'</span>, defaultValue: <span class="kw">false</span>,
+                     description: <span class="str">'Skip SonarQube (for hotfixes)'</span>)
+    }
+
+    <span class="kw">stages</span> {
+        <span class="kw">stage</span>(<span class="str">'Checkout'</span>) {
+            <span class="kw">steps</span> { checkout scm }
+        }
+
+        <span class="kw">stage</span>(<span class="str">'Build'</span>) {
+            <span class="kw">steps</span> {
+                timeout(time: <span class="num">10</span>, unit: <span class="str">'MINUTES'</span>) {
+                    sh <span class="str">'mvn clean package -DskipTests'</span>
+                }
+            }
+            <span class="kw">post</span> {
+                success {
+                    archiveArtifacts artifacts: <span class="str">'target/app.jar'</span>, fingerprint: <span class="kw">true</span>
+                    stash includes: <span class="str">'target/app.jar'</span>, name: <span class="str">'app-jar'</span>
+                }
+            }
+        }
+
+        <span class="kw">stage</span>(<span class="str">'Test'</span>) {
+            <span class="kw">steps</span> { sh <span class="str">'mvn test'</span> }
+            <span class="kw">post</span> {
+                always { junit <span class="str">'**/target/surefire-reports/*.xml'</span> }
+            }
+        }
+
+        <span class="kw">stage</span>(<span class="str">'Code Quality'</span>) {
+            <span class="kw">when</span> {
+                expression { <span class="kw">return</span> !params.SKIP_SONAR }
+            }
+            parallel {
+                <span class="kw">stage</span>(<span class="str">'SonarQube Analysis'</span>) {
+                    <span class="kw">steps</span> {
+                        withSonarQubeEnv(<span class="str">'SonarQube'</span>) {
+                            sh <span class="str">'mvn sonar:sonar'</span>
+                        }
+                    }
+                }
+                <span class="kw">stage</span>(<span class="str">'Dependency Check'</span>) {
+                    <span class="kw">steps</span> {
+                        retry(<span class="num">2</span>) { sh <span class="str">'mvn dependency-check:check'</span> }
+                    }
+                }
+            }
+        }
+
+        <span class="kw">stage</span>(<span class="str">'Quality Gate'</span>) {
+            <span class="kw">when</span> {
+                expression { <span class="kw">return</span> !params.SKIP_SONAR }
+            }
+            <span class="kw">steps</span> {
+                timeout(time: <span class="num">5</span>, unit: <span class="str">'MINUTES'</span>) {
+                    waitForQualityGate abortPipeline: <span class="kw">true</span>
+                }
+            }
+        }
+
+        <span class="kw">stage</span>(<span class="str">'Publish to Nexus'</span>) {
+            <span class="kw">when</span> { branch <span class="str">'main'</span> }
+            <span class="kw">steps</span> {
+                withCredentials([usernamePassword(
+                    credentialsId: <span class="str">'nexus-credentials'</span>,
+                    usernameVariable: <span class="str">'NEXUS_USER'</span>,
+                    passwordVariable: <span class="str">'NEXUS_PASS'</span>
+                )]) {
+                    <span class="kw">script</span> {
+                        writeFile file: <span class="str">'maven-settings.xml'</span>, text: <span class="str">"""&lt;settings&gt;...&lt;/settings&gt;"""</span>
+                    }
+                    sh <span class="str">"mvn deploy -DskipTests -s maven-settings.xml -Denv.NEXUS_URL=${NEXUS_URL}"</span>
+                }
+            }
+            <span class="kw">post</span> {
+                always { sh <span class="str">'rm -f maven-settings.xml'</span> }
+            }
+        }
+
+        <span class="kw">stage</span>(<span class="str">'Deploy'</span>) {
+            <span class="kw">steps</span> {
+                sh <span class="str">"""
+                    pkill -f app.jar || true
+                    nohup java -jar target/app.jar > /home/ubuntu/app.log 2>&amp;1 &amp;
+                    echo "App started on ${params.DEPLOY_ENV}"
+                """</span>
+            }
+        }
+    }
+
+    <span class="kw">post</span> {
+        success {
+            echo <span class="str">"Build #${BUILD_NUMBER} deployed to ${params.DEPLOY_ENV}"</span>
+        }
+        failure {
+            mail to: <span class="str">'team@example.com'</span>,
+                 subject: <span class="str">"FAILED: ${JOB_NAME} #${BUILD_NUMBER}"</span>,
+                 body: <span class="str">"Check build at: ${BUILD_URL}"</span>
+        }
+        always {
+            cleanWs()   <span class="cmt">// Clean workspace after every build</span>
+        }
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- M19 -->
+    <div class="module" id="m19">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">19</div>
+        <div class="module-title">Key Jenkins Plugins</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <table>
+          <tr><th>Plugin</th><th>Purpose</th></tr>
+          <tr><td>Pipeline</td><td>Core - enables Jenkinsfile</td></tr>
+          <tr><td>Git</td><td>Git SCM integration</td></tr>
+          <tr><td>GitHub Branch Source</td><td>Multibranch + PR detection</td></tr>
+          <tr><td>Credentials Binding</td><td><code>withCredentials()</code></td></tr>
+          <tr><td>SonarQube Scanner</td><td><code>withSonarQubeEnv()</code></td></tr>
+          <tr><td>Nexus Artifact Uploader</td><td>Nexus integration</td></tr>
+          <tr><td>JUnit</td><td>Test result publishing</td></tr>
+          <tr><td>Docker Pipeline</td><td>Docker build/push</td></tr>
+          <tr><td>Slack Notification</td><td>Slack alerts</td></tr>
+          <tr><td>Blue Ocean</td><td>Modern UI for pipelines</td></tr>
+          <tr><td>Workspace Cleanup</td><td><code>cleanWs()</code></td></tr>
+          <tr><td>Timestamper</td><td>Adds timestamps to console output</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- M20 -->
+    <div class="module" id="m20">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num">20</div>
+        <div class="module-title">Troubleshooting Common Issues</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <h3>Pipeline Not Triggering</h3>
+        <ul>
+          <li>Check: Webhook delivered? (GitHub → Repo → Settings → Webhooks → Recent Deliveries)</li>
+          <li>Check: Jenkins firewall — can GitHub reach your server?</li>
+          <li>Workaround: Use <code>pollSCM</code> as backup</li>
+        </ul>
+
+        <h3>withCredentials Not Masking Password</h3>
+        <ul>
+          <li>The variable MUST be accessed via <code>$VAR</code> in shell (not <code>${VAR}</code> in Groovy string)</li>
+          <li>Use single-quote strings for <code>sh</code> when possible</li>
+        </ul>
+
+        <h3>waitForQualityGate Times Out</h3>
+        <ul>
+          <li>SonarQube webhook not configured</li>
+          <li>Fix: SonarQube → Administration → Configuration → Webhooks → Add <code>http://jenkins:8080/sonarqube-webhook/</code></li>
+        </ul>
+
+        <h3>nohup Process Dies After Pipeline</h3>
+        <div class="warn"><strong>Jenkins kills all child processes</strong> when a stage ends.</div>
+        <pre><code><span class="cmt"># Fix: set this env var before nohup</span>
+JENKINS_NODE_COOKIE=dontKillMe nohup java -jar app.jar &amp;</code></pre>
+
+        <h3>Maven Build Fails with "No settings.xml"</h3>
+        <ul>
+          <li>Your pipeline creates it dynamically — check the <code>writeFile</code> step succeeded</li>
+          <li>Ensure the <code>post { always { rm -f maven-settings.xml } }</code> didn't run before <code>mvn deploy</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Week Plan -->
+    <div class="module" id="roadmap">
+      <div class="module-header" onclick="toggle(this)">
+        <div class="module-num" style="background:var(--accent2);color:#000;">📅</div>
+        <div class="module-title">4-Week Learning Roadmap</div>
+        <div class="module-toggle">▼</div>
+      </div>
+      <div class="module-body">
+        <div class="week-grid">
+          <div class="week-card">
+            <h4>Week 1 — Core (Modules 1–4)</h4>
+            <ul>
+              <li>Understand CI/CD concepts</li>
+              <li>Read your Jenkinsfile line by line</li>
+              <li>Environment variables</li>
+              <li>Run your first pipeline</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>Week 2 — Agents & Secrets (Modules 5–8)</h4>
+            <ul>
+              <li>Agent types and Docker agents</li>
+              <li>Credential store setup</li>
+              <li>Post actions and notifications</li>
+              <li>Parallel stages</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>Week 3 — Pipeline Control (Modules 9–13)</h4>
+            <ul>
+              <li>Parameterized builds</li>
+              <li>When conditions</li>
+              <li>Shared libraries</li>
+              <li>Multibranch pipelines</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>Week 4 — Advanced (Modules 14–20)</h4>
+            <ul>
+              <li>Artifacts and stash/unstash</li>
+              <li>Error handling and retry</li>
+              <li>Docker integration</li>
+              <li>Enhance your own pipeline</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .content -->
+
+  <div class="footer">
+    Jenkins Full Course &nbsp;·&nbsp; Built for your Spring Boot + MongoDB Project &nbsp;·&nbsp; 20 Modules
+  </div>
+</div><!-- end .main -->
+
+<script>
+  function toggle(header) {
+    const module = header.parentElement;
+    module.classList.toggle('open');
+  }
+
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+  });
+
+  // Highlight active nav link
+  const sections = document.querySelectorAll('.module[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
