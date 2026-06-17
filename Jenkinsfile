@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_URL = 'http://172.31.10.73:8081'
+        NEXUS_URL = 'http://nexus:8081'
     }
 
     stages {
