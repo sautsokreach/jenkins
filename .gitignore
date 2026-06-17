@@ -6,3 +6,4 @@ target/
 *.iml
 .vscode/
 .DS_Store
+nginx/conf.d/active.conf

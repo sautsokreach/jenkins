@@ -61,6 +61,18 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - jenkins
+
 volumes:
   jenkins_home:
   nexus_data:
