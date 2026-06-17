@@ -1,7 +1,7 @@
 FROM jenkins/jenkins:lts
 USER root
+COPY --from=docker:latest /usr/local/bin/docker /usr/local/bin/docker
 RUN apt-get update && \
-    apt-get install -y maven docker.io && \
-    usermod -aG docker jenkins && \
+    apt-get install -y maven && \
     rm -rf /var/lib/apt/lists/*
 USER jenkins
