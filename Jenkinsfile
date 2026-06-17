@@ -124,10 +124,10 @@ pipeline {
                     sh "pkill -f 'app-${inactiveSlot}\\.jar' || true"
                     sh "sleep 3"
                     sh """
-                        cp target/app.jar /home/ubuntu/app-${inactiveSlot}.jar
-                        nohup java -jar /home/ubuntu/app-${inactiveSlot}.jar \
+                        cp target/app.jar /var/jenkins_home/app-${inactiveSlot}.jar
+                        nohup java -jar /var/jenkins_home/app-${inactiveSlot}.jar \
                             --server.port=${inactivePort} \
-                            > /home/ubuntu/app-${inactiveSlot}.log 2>&1 &
+                            > /var/jenkins_home/app-${inactiveSlot}.log 2>&1 &
                     """
 
                     // ── Health check: wait up to 60 s for port to open ──────────
